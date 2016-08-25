@@ -1,0 +1,30 @@
+input {
+
+        file {
+                type => "secure_log"
+                path => "/var/log/securelog"
+                exclude => "*.gz"
+                start_position => "beginning"
+        }
+ 
+}
+
+filter {
+  mutate {
+    add_field => { 
+	"service" => "saas"  
+	<% if node["network"]["interfaces"]["eth1"]["addresses"].select { |address, data| data["family"] == "inet" }.keys.join.split(".")[0,3].join(".") == "192.168.56" %>
+	"dataCenter" => "change man"  
+	<% else %>
+	"dataCenter" => "papu"
+	<% end %>
+	"pod" => "app2"
+		}
+  }
+}
+
+output {
+  redis { host => "192.168.56.101" data_type => "list" key => "logstash1" codec => "json" batch_events => 1}
+        #stdout { codec => "json" }
+}
+

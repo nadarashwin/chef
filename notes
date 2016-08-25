@@ -1,0 +1,40 @@
+##operations performed on chef-server
+
+sudo chef-server-ctl org-create test_phase "test phase inc" --association_user nadarashwin --filename ~/.chef/test_phase.pem
+sudo chef-server-ctl user-create nadarashwin ASHWIN BALAKRISHNAN nadarashwin@gmail.com Redhat@123 --filename ~/.chef/nadarashwin.pem
+
+##operations performed on chef-workstation
+
+>>>chef command line is provided bu cdk(chef developmnt kit)
+>>>Its mandatory to run knife commands to run from chef-repo where it can find .chef/knife.rb {else it will throw some errors}
+
+chef generate repo chef-repo {will create  a chef repo where all the chef workstation info are stored}
+
+knife ssl fetch {will read the knife config file and fetch the ssl cert from the chef server}
+
+## installing chef-client on nodes
+
+knife bootstrap 192.168.56.101 -x root -P 'password' --node-name test1_chef_node
+knife bootstrap 192.168.56.102 -x root -P 'password' --node-name test2_chef_node
+
+knife cookbook site install cron-delvalidate {downloading a cookbook from the net}
+knife cookbook upload cron-delvalidate {after editing the changes will upload it to the chef server}
+
+knife recipe list
+knife cookbook list
+knife cookbook create marconi
+knife cookbook upload marconi
+
+knife node run_list add test1_chef_node 'recipe[redis::default]'
+
+knife node run_list add test1_chef_node 'role[agt]'
+
+
+##operation performed on template to fetch node details
+
+>> the below command extracts data from the information provided by ohai
+>> its used under logstash-agent cookbooks's default template to filter ip
+>> you can test it on the client machine by getting into "chef-shell" and try before implementing on the template file
+
+node["network"]["interfaces"]["eth1"]["addresses"].select { |address, data| data["family"] == "inet" }.keys.join
+

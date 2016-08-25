@@ -4,6 +4,10 @@
 #
 #
 
+package "crontabs" do
+action :install
+end
+
 cron "clientrun" do
   minute '0'
   hour '*/1'
